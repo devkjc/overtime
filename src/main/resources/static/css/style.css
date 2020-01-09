@@ -1,0 +1,160 @@
+.tg {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 70%;
+}
+
+.tg td {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    padding: 10px 5px;
+    border-style: solid;
+    border-width: 1px;
+    overflow: hidden;
+    word-break: normal;
+    border-color: black;
+    text-align: center;
+}
+.tg td.header {
+    /*font-weight: bold;*/
+    background: #c0c0c0;
+}
+
+.tg th {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    padding: 10px 5px;
+    border-style: solid;
+    border-width: 1px;
+    overflow: hidden;
+    word-break: normal;
+    border-color: black;
+}
+
+.tg .tg-c3ow {
+    border-color: inherit;
+    text-align: center;
+    vertical-align: top
+}
+
+.tg .tg-llyw {
+    background-color: #c0c0c0;
+    border-color: inherit;
+    vertical-align: center;
+    width: 100px;
+}
+
+.tg .tg-0pky {
+    border-color: inherit;
+    vertical-align: center
+}
+
+td input {
+    width: calc(100% - 20px);
+    display: block;
+    margin: 0 auto;
+}
+
+.people tr > td not:first-child {
+    width: 20%;
+}
+
+.utilTd {
+    width: 110px;
+}
+
+.fileBox .fileName {
+    display: inline-block;
+    width: 259px;
+    height: 45px;
+    padding-left: 10px;
+    margin-right: 5px;
+    line-height: 45px;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    vertical-align: middle;
+}
+
+.fileBox .btn_file {
+    display: inline-block;
+    border: 1px solid #000;
+    width: 100px;
+    height: 45px;
+    font-size: 1em;
+    line-height: 45px;
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 0;
+}
+
+.fileBox input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0
+}
+
+.fileBox {
+    margin-bottom: 30px;
+}
+
+button.download {
+    width: 240px;
+    color: #fff;
+    background: #1d8bcb;
+    border: none;
+    letter-spacing: -1px;
+    padding: 15px 20px;
+    font-weight: bold;
+    height: 45px;
+    font-size: 15px;
+}
+
+.downloadWrap{
+    padding : 20px 0px;
+}
+
+tr.pointer{
+    cursor: pointer;
+}
+
+.swal2-popup .swal2-content {
+    padding-bottom: 20px !important;
+    font-size: 1.215em !important;
+    font-weight: 600 !important;
+    font-family: 'Noto Sans KR', sans-serif;
+    letter-spacing: -1px;
+}
+
+.swal2-popup{
+    font-size: 1.5rem !important;
+}
+
+.swal2-popup .swal2-styled.swal2-confirm {
+    font-weight: 600;
+}
+
+.swal2-popup .swal2-styled:focus {
+    box-shadow: none !important;
+}
+
+.swal2-popup .swal2-header {
+    padding-top:0 !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring{
+    border: .25em solid rgba(134, 161, 220, 0.3) !important;
+}
+div.swal2-popup .swal2-title {
+    font-size: 1.215em;
+}
+
+.btnWrap {
+    float: right;
+    margin-bottom: 20px;
+}

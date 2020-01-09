@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/layout/BasicTemplate}">
+<head>
+</head>
+
+<body>
+
+	<div layout:fragment="content">
+		<form id="excelUploadForm" name="excelUploadForm" enctype="multipart/form-data" method="post" action="/excelUploadAjax">
+			<div class="fileBox">
+				<input type="text" class="fileName pointer" readonly="readonly">
+				<label for="excelFile" class="btn_file pointer">찾아보기</label>
+				<input type="file" id="excelFile" name="excelFile" class="uploadBtn">
+                <input type="hidden" name="groupId" id="groupId" value="1">
+			</div>
+			<div class="bottom">
+				<button type="button" id="addExcelImpoartBtn" class="btn" onclick="check()">
+					<span>추가</span>
+				</button>
+			</div>
+		</form>
+	</div>
+	<th:block layout:fragment="script">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.js"></script>
+		<script th:inline="javascript">
+			$(document).ready(function() {
+				var uploadFile = $('.fileBox .uploadBtn');
+				uploadFile.on('change', function(){
+					if(window.FileReader){
+						var filename = $(this)[0].files[0].name;
+					} else {
+						var filename = $(this).val().split('/').pop().split('\\').pop();
+					}
+					$(this).siblings('.fileName').val(filename);
+				});
+			});
+			
+			$('.fileName').on('click' , function(){
+				$('.btn_file').trigger('click');
+			});
+
+			function checkFileType(filePath) {
+				var fileFormat = filePath.split(".");
+				if (fileFormat.indexOf("xlsx") > -1) {
+					return true;
+				} else if (fileFormat.indexOf("xls") > -1) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			function check() {
+				var file = $("#excelFile").val();
+				if (file == "" || file == null) {
+					alert("파일을 선택해주세요.");
+					return false;
+				} else if (!checkFileType(file)) {
+					alert("엑셀 파일만 업로드 가능합니다.");
+					return false;
+				}
+
+				if (confirm("업로드 하시겠습니까?")) {
+					var options = {
+						success : function(data) {
+
+							if (data > 0) {
+								alert("모든 데이터가 업로드 되었습니다.");
+							} else {
+								alert("업로드가 실패하였습니다.");
+							}
+						},
+						type : "POST"
+					};
+					$("#excelUploadForm").ajaxSubmit(options);
+
+				}
+			}
+		</script>
+	</th:block>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/BasicTemplate}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+
+    <div class="btnWrap">
+        <button class="btn" onclick="location.href='/createGroup'">과제 생성</button>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>제목</th>
+            <th>책임부서</th>
+            <th>책임자</th>
+            <th>지원기관</th>
+        </tr>
+        <tr th:each="dto,index:${groupList}" class="pointer listRow" th:data-id="${dto.groupId}" th:if="${#lists.size(groupList) > 0}">
+            <td th:text="${dto.group_name}"></td>
+            <td th:text="${dto.group_officer_dept}"></td>
+            <td th:text="${dto.group_officer_name}"></td>
+            <td th:text="${dto.group_support}"></td>
+        </tr>
+        <tr th:unless="${#lists.size(groupList) > 0}">
+            <td colspan="4">데이터가 없습니다.</td>
+        </tr>
+    </table>
+</div>
+<th:block layout:fragment="script">
+    <script>
+        $('tr.listRow').on("click", function () {
+
+            let groupId = $(this).data("id");
+            location.href = '/detail?groupId=' + groupId;
+
+        });
+    </script>
+</th:block>
+</body>
+</html>

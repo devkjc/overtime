@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/BasicTemplate}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <form action="/createGroup" method="post" id="groupForm">
+
+        <input type="text" name="group_name" id="group_name" not_null="true" nm="제목" placeholder="제목">
+
+        <table class="tg">
+            <tr>
+                <th class="tg-c3ow" colspan="5">﻿야 근 일 지</th>
+            </tr>
+            <tr>
+                <td class="tg-llyw">연구책임자</td>
+                <td class="tg-llyw">소속</td>
+                <td class="tg-0pky"><input type="text" name="group_officer_dept" id="group_officer_dept" not_null="true" nm="연구책임자 소속"></td>
+                <td class="tg-llyw">성명</td>
+                <td class="tg-0pky"><input type="text" name="group_officer_name" id="group_officer_name" not_null="true" nm="연구책임자 성명"></td>
+            </tr>
+            <tr>
+                <td class="tg-llyw">지원 기관</td>
+                <td class="tg-0pky" colspan="2"><input type="text" name="group_support" id="group_support" not_null="true" nm="지원 기관"></td>
+                <td class="tg-llyw">연구 기간</td>
+                <td class="tg-0pky"><input type="text" name="group_period" id="group_period" not_null="true" nm="연구 기간"></td>
+            </tr>
+            <tr>
+                <td class="tg-llyw">연구 과제명</td>
+                <td class="tg-0pky" colspan="4"><input type="text" name="group_subject_name" id="group_subject_name" not_null="true" nm="연구 과제명"></td>
+            </tr>
+            <tr>
+                <td class="tg-llyw">야근 장소</td>
+                <td class="tg-0pky" colspan="4"><input type="text" name="group_place" id="group_place" not_null="true" nm="야근 장소"></td>
+            </tr>
+        </table>
+        <table class="tg people">
+            <tr>
+                <td class="tg-llyw" id="sideTitle" rowspan="2">야근자 명단</td>
+                <td class="tg-0pky">직책</td>
+                <td class="tg-0pky">성명</td>
+                <td class="tg-0pky">업무내용</td>
+                <td class="tg-0pky utilTd">추가/삭제</td>
+            </tr>
+            <tr class="addRow">
+                <td class="tg-0pky"><input type="text" name="" not_null="true" nm="직책"></td>
+                <td class="tg-0pky"><input type="text" name="" not_null="true" nm="성명"></td>
+                <td class="tg-0pky"><input type="text" name="" not_null="true" nm="업무내용"></td>
+                <td class="tg-0pky utilTd">
+                    <button type="button" class="addBtn">추가</button>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    </form>
+
+    <button type="button" id="formSubmit">저장</button>
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+
+        $(document).on('click', '.addBtn', function () {
+
+            let trTemp = '<tr class="addRow">' +
+                '            <td class="tg-0pky"><input type="text" name="" id="" not_null="true" nm="직책"></td>' +
+                '            <td class="tg-0pky"><input type="text" name="" id="" not_null="true" nm="성명"></td>' +
+                '            <td class="tg-0pky"><input type="text" name="" id="" not_null="true" nm="업무내용"></td>' +
+                '            <td class="tg-0pky utilTd">' +
+                '                <button type="button" class="addBtn">추가</button>' +
+                '                <button type="button" class="deleteBtn">삭제</button>' +
+                '            </td>' +
+                '        </tr>';
+
+            $(this).parents("tr").after(trTemp);
+            leftRowspan();
+        });
+
+        $(document).on('click', '.deleteBtn', function () {
+            $(this).parents("tr").remove();
+            leftRowspan();
+        });
+
+        function leftRowspan() {
+            let rowCnt = $('table.people tr').length;
+            $('#sideTitle').attr('rowspan', rowCnt);
+        }
+
+        $("#formSubmit").on("click", function (event) {
+
+            let formObj = $('#groupForm');
+
+            if(value_chk(formObj)){
+                let i = 0;
+                event.preventDefault();
+
+                $('.addRow').each(function (index) {
+                    $(this).find('input').eq(i++).attr('name', 'peopleList[' + (index) + '].people_position');
+                    $(this).find('input').eq(i++).attr('name', 'peopleList[' + (index) + '].people_name');
+                    $(this).find('input').eq(i++).attr('name', 'peopleList[' + (index) + '].people_duties');
+
+                    i = 0;
+                });
+
+                formObj.submit();
+
+                return true;
+            }else{
+                return false;
+            }
+        });
+
+        function value_chk(formObj) {
+            let objs = formObj.find("[not_null]");
+
+            for (let i = 0; i < objs.length; i++) {
+                if (objs.eq(i).val() == '') {
+
+                    objs.eq(i).focus();
+
+                    let message = objs.eq(i).attr("nm") + '은(는) 필수입력사항입니다.';
+                    swal({
+                        type             : 'info',
+                        text             : message,
+                        confirmButtonText: "확인"
+                    });
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+    </script>
+</th:block>
+
+</body>
+</html>

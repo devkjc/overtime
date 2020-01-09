@@ -1,0 +1,40 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<title>야근식대관리 | redirect</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-3.3.1.min.js"><\/script>')</script>
+<!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+<script src ="https://cdn.jsdelivr.net/npm/promise-polyfill@7.1.0/dist/promise.min.js"></script>
+
+<script th:inline="javascript">
+
+/* <![CDATA[ */
+
+	if(/*[[${rttrMap}]]*/ != null){
+		var rttrMap = /*[[${rttrMap}]]*/;
+		var message = rttrMap.mmm;
+		var returnUrl = rttrMap.url;
+		var type = rttrMap.status;
+
+        swal({
+             type: type,
+             text: message,
+             confirmButtonText: "확인"
+
+        }).then(function() {
+          location.replace(returnUrl);
+        });
+    }
+
+/* ]]> */
+</script>
+</body>
+</html>
