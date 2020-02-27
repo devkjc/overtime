@@ -116,8 +116,8 @@
             </div>
         </div>
 
-    <section>
-        <form action="/save" method="post" id="utilForm" style="display: none" th:if="${dto.receiptList != null && #lists.size(dto.receiptList) > 0}">
+    <section id="utilSection">
+        <form action="/save" method="post" id="utilForm" th:if="${dto.receiptList != null && #lists.size(dto.receiptList) > 0}">
             <input type="hidden" name="groupId" th:value="${dto.groupId}">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit">엑셀 생성</button>
@@ -142,6 +142,13 @@
                 <td>{{receipt_amount}}</td>
             </tr>
         {{/each}}
+    </script>
+    <script id="save-template" type="text/x-handlebars-template">
+        <form action="/save" method="post" id="utilForm">
+            <input type="hidden" name="groupId" th:value="${dto.groupId}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit">엑셀 생성</button>
+        </form>
     </script>
 
 </div>
@@ -193,11 +200,16 @@
                             let receipt = Handlebars.compile(
                                 $('#receipt-response-template').html(),
                             );
+                            let save = Handlebars.compile(
+                                $('#save-template').html(),
+                            );
                             let inputResponse = {
                                 view_list: data,
                             };
                             $('.receiptTable tbody').empty();
                             $('.receiptTable tbody').append(receipt(inputResponse));
+                            $('#utilForm').remove();
+                            $('#utilSection').prepend(save);
 
                             $('#receiptCollapse').collapse('show');
 
