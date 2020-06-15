@@ -227,13 +227,14 @@
 
         function down() {
 
-            var r = "upload/";
-
-            var s = "excelUpload.xlsx";
+            let url = "upload/";
+            let fileName = "excelUpload.xlsx";
+            let oriFileName = "sample_업로드.xlsx";
 
             location.href = "/common/fileDown/?fileUrl="
-                + encodeURIComponent(r) + "&oriFileName="
-                + encodeURIComponent(s);
+                + encodeURIComponent(url) + "&fileName="
+                + encodeURIComponent(fileName) + "&oriFileName="
+                + encodeURIComponent(oriFileName);
         }
     </script>
 </th:block>

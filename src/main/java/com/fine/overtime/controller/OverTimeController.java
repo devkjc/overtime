@@ -6,9 +6,9 @@ import com.fine.overtime.domain.OverTimeReceipt;
 import com.fine.overtime.repo.GroupRepo;
 import com.fine.overtime.repo.PeopleRepo;
 import com.fine.overtime.repo.ReceiptRepo;
-import com.fine.overtime.util.ExcelOverTime;
-import com.fine.overtime.util.ExcelRead;
-import com.fine.overtime.util.ExcelUploadUtil;
+import com.fine.overtime.util.excel.read.ExcelRead;
+import com.fine.overtime.util.excel.read.ExcelUploadUtil;
+import com.fine.overtime.util.excel.write.ExcelOverTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
@@ -87,19 +87,14 @@ public class OverTimeController {
     }
 
     @GetMapping("/")
-    public String index() {
-
-        return "/index";
-    }
-
-    @GetMapping("/list")
-    public void list(Model model) {
+    public String list(Model model) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "groupId");
-//        List<OverTimeGroup> list = repo.findAll(sort);
-        List<OverTimeGroup> list = repo.findAll();
+        List<OverTimeGroup> list = repo.findAll(sort);
 
         model.addAttribute("groupList", list);
+
+        return "/list";
     }
 
     @GetMapping("/createGroup")
@@ -112,7 +107,7 @@ public class OverTimeController {
 
         repo.save(group);
 
-        return redirectAttr(rttr,"success","과제 생성이 완료되었습니다.", "/list");
+        return redirectAttr(rttr, "success", "과제 생성이 완료되었습니다.", "/");
     }
 
     @PostMapping("/modifyGroup")
@@ -131,7 +126,7 @@ public class OverTimeController {
         repo.save(group);
         peopleRepo.deleteByGroupIsNull();
 
-        return redirectAttr(rttr,"success","과제 수정이 완료되었습니다.", "/list");
+        return redirectAttr(rttr, "success", "과제 수정이 완료되었습니다.", "/");
     }
 
     @PostMapping("/deleteGroup")
@@ -141,7 +136,7 @@ public class OverTimeController {
 
         repo.deleteById(groupId);
 
-        return redirectAttr(rttr,"success","과제 삭제가 완료되었습니다.", "/list");
+        return redirectAttr(rttr, "success", "과제 삭제가 완료되었습니다.", "/");
     }
 
     @GetMapping("/detail")

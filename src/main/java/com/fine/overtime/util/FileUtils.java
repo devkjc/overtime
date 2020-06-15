@@ -40,8 +40,8 @@ public class FileUtils {
         try {
             ZipOutputStream zip_out = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(path + "/" + fileName), 2048));
 
-            for (int i = 0; i < len; i++) {
-                zip_folder("", new File(_path + list[i]), zip_out, path);
+            for (String s : list) {
+                zip_folder("", new File(_path + s), zip_out, path);
             }
 
             zip_out.close();
@@ -87,8 +87,8 @@ public class FileUtils {
             String[] list = file.list();
             if (list != null) {
                 int len = list.length;
-                for (int i = 0; i < len; i++) {
-                    zip_folder(entry.getName(), new File(file.getPath() + "/" + list[i]), zout, toPath);
+                for (String s : list) {
+                    zip_folder(entry.getName(), new File(file.getPath() + "/" + s), zout, toPath);
                 }
             }
         }
@@ -100,8 +100,8 @@ public class FileUtils {
             while (folder.exists()) {
                 File[] folder_list = folder.listFiles(); //파일리스트 얻어오기
 
-                for (int j = 0; j < folder_list.length; j++) {
-                    folder_list[j].delete(); //파일 삭제
+                for (File file : folder_list) {
+                    file.delete(); //파일 삭제
                 }
                 if (folder_list.length == 0 && folder.isDirectory()) {
                     folder.delete(); //대상폴더 삭제
@@ -112,15 +112,14 @@ public class FileUtils {
         }
     }
 
-    public void fileDown(String fileUrl, String oriFileName, HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
+    public void fileDown(String fileUrl, String fileName, String oriFileName, HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
 
         request.setCharacterEncoding("UTF-8");
-        System.out.println("파일이름: " + oriFileName);
 
         //파일 업로드된 경 로
         try {
 
-            fileUrl = fileUrl + oriFileName;
+            fileUrl = fileUrl + fileName;
 
             System.out.println("fileUrl:" + fileUrl);
 
@@ -149,8 +148,8 @@ public class FileUtils {
             if (!skip) {
                 String[] invalidName = {"\\\\", "/", ":", "[*]", "[?]", "\"", "<", ">", "[|]", "&", " "}; // 윈도우 파일명으로 사용할수 없는 문자
 
-                for (int i = 0; i < invalidName.length; i++) {
-                    oriFileName = oriFileName.replaceAll(invalidName[i], "_");
+                for (String s : invalidName) {
+                    oriFileName = oriFileName.replaceAll(s, "_");
                 }
 
                 System.out.println("변환된 파일이름: " + oriFileName);

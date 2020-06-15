@@ -1,10 +1,11 @@
-package com.fine.overtime.util;
+package com.fine.overtime.util.excel.write;
 
 import com.fine.overtime.domain.OverTimeGroup;
 import com.fine.overtime.domain.OverTimePeople;
 import com.fine.overtime.domain.OverTimeReceipt;
 import com.fine.overtime.repo.PeopleRepo;
 import com.fine.overtime.repo.ReceiptRepo;
+import com.fine.overtime.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.util.HSSFColor.GREY_25_PERCENT;
 import org.apache.poi.ss.usermodel.*;
@@ -20,6 +21,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +37,9 @@ public class ExcelOverTime {
     public void execute(OverTimeGroup group, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String path = createExcel(group, session);
-        String fileName = group.getGroup_name()+"_야근식대.zip";
-        fileUtils.createZipFile(path,fileName);
-        fileUtils.fileDown(path,fileName,request,response,session);
+        String fileName = group.getGroup_name() + "_야근식대.zip";
+        fileUtils.createZipFile(path, fileName);
+        fileUtils.fileDown(path, fileName, fileName, request, response, session);
 
         fileUtils.directoryDelete(path);
     }
@@ -57,6 +62,8 @@ public class ExcelOverTime {
             String date = dto.getReceipt_date();
             String overtime_name = dto.getReceipt_name();
             int overtime_money = dto.getReceipt_amount();
+
+            System.out.println("overtime_money :: " + overtime_money);
 
             // 야근 식대별 인원 수 계산
             if (overtime_money <= 10000) {
@@ -291,8 +298,13 @@ public class ExcelOverTime {
             //--------------------------------------------------------------------------------------------------
             //야근자 명단.
 
-            ArrayList<OverTimePeople> overtime_person = peopleRepo.findByGroup(group);
+            List<OverTimePeople> overtime_person = peopleRepo.findByGroup(group);
             int aa = 8;
+
+            System.out.println("X :: " + X);
+
+            Collections.shuffle(overtime_person);
+            overtime_person = overtime_person.stream().limit(X).sorted(Comparator.comparing(OverTimePeople::getPeople_id)).collect(Collectors.toList());
 
             for (OverTimePeople person : overtime_person) {
 

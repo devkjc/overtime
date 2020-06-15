@@ -1,4 +1,4 @@
-package com.fine.overtime.util;
+package com.fine.overtime.util.excel.read;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,25 +30,25 @@ public class ExcelReadOption {
     }
     
     public List<String> getOutputColumns() {
-        
-        List<String> temp = new ArrayList<String>();
+
+        List<String> temp = new ArrayList<>();
         temp.addAll(outputColumns);
-        
+
         return temp;
     }
     
     public void setOutputColumns(List<String> outputColumns) {
-        
-        List<String> temp = new ArrayList<String>();
+
+        List<String> temp = new ArrayList<>();
         temp.addAll(outputColumns);
-        
+
         this.outputColumns = temp;
     }
     
     public void setOutputColumns(String ... outputColumns) {
         
         if(this.outputColumns == null) {
-            this.outputColumns = new ArrayList<String>();
+            this.outputColumns = new ArrayList<>();
         }
         
         for(String ouputColumn : outputColumns) {

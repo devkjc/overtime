@@ -1,4 +1,4 @@
-package com.fine.overtime.util;
+package com.fine.overtime.util.excel.read;
 
 import lombok.extern.java.Log;
 import org.springframework.ui.Model;
@@ -18,36 +18,34 @@ public class ExcelUploadUtil {
 		
 		Map<String, Object> map = model.asMap();
 		
-		log.info("FileUploadUtil execute !! ");
-		
 		MultipartFile mf = (MultipartFile) map.get("excelFile");
 		HttpSession httpSession  = (HttpSession) map.get("httpSession");
 		
 		if(mf != null && !(mf.getOriginalFilename().equals(""))) {
-			
+
 			String originalName = mf.getOriginalFilename(); //파일이름
-			String originalNameExtension = originalName.substring(originalName.lastIndexOf(".")+1).toLowerCase();
-			
+			String originalNameExtension = originalName.substring(originalName.lastIndexOf(".") + 1).toLowerCase();
+
 			//확장자 제한
-			if(((originalNameExtension.equals("html")) || (originalNameExtension.equals("php")) || (originalNameExtension.equals("exe")) || (originalNameExtension.equals("js")) || (originalNameExtension.equals("java")) || (originalNameExtension.equals("class")) )) {
+			if (((originalNameExtension.equals("html")) || (originalNameExtension.equals("php")) || (originalNameExtension.equals("exe")) || (originalNameExtension.equals("js")) || (originalNameExtension.equals("java")) || (originalNameExtension.equals("class")))) {
 				return null;
 			}
-			
+
 			//파일 크기 제한(100MB)
 			long fileSize = mf.getSize();
 			long limitFileSize = 100 * 1024 * 1024; //100MB
-			if(limitFileSize < fileSize) {
+			if (limitFileSize < fileSize) {
 				return null;
 			}
-			
+
 			//파일 저장명 처리
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMDDHHmmss");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 			SimpleDateFormat dateFormatHH = new SimpleDateFormat("yyyyMM");
 			String today = dateFormat.format(new Date());
 			String todayHH = dateFormatHH.format(new Date());
 			String modifyPath = todayHH;
 			String modifyName = today + "_" + UUID.randomUUID().toString().substring(20) + "." + originalNameExtension;
-			
+
 			//저장경로
 			String defaultPath = httpSession.getServletContext().getRealPath("/"); //서버 기본 경로(프로젝트X)
 			String path = defaultPath + File.separator + "upload" + File.separator + "board" + File.separator + "file" + File.separator + modifyPath + File.separator;
