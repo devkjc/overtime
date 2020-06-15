@@ -3,6 +3,7 @@ package com.fine.overtime.util;
 import com.fine.overtime.domain.OverTimeGroup;
 import com.fine.overtime.domain.OverTimeReceipt;
 import com.fine.overtime.repo.GroupRepo;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,9 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ExcelRead {
-
-    @Autowired
-    GroupRepo groupRepo;
 
     public static List<Map<String, String>> read(ExcelReadOption excelReadOption) {
 

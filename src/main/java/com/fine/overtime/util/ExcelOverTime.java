@@ -1,60 +1,42 @@
 package com.fine.overtime.util;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import com.fine.overtime.domain.OverTimeGroup;
 import com.fine.overtime.domain.OverTimePeople;
 import com.fine.overtime.domain.OverTimeReceipt;
-import com.fine.overtime.repo.GroupRepo;
 import com.fine.overtime.repo.PeopleRepo;
 import com.fine.overtime.repo.ReceiptRepo;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.util.HSSFColor.GREY_25_PERCENT;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Service
+@RequiredArgsConstructor
 public class ExcelOverTime {
 
-    private ReceiptRepo receiptRepo;
-    private PeopleRepo peopleRepo;
-    private GroupRepo groupRepo;
-
-    public ExcelOverTime(ReceiptRepo receiptRepo, PeopleRepo peopleRepo, GroupRepo groupRepo) {
-        this.receiptRepo = receiptRepo;
-        this.peopleRepo = peopleRepo;
-        this.groupRepo = groupRepo;
-    }
+    private final ReceiptRepo receiptRepo;
+    private final PeopleRepo peopleRepo;
+    private final FileUtils fileUtils;
 
     public void execute(OverTimeGroup group, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String path = createExcel(group, session);
         String fileName = group.getGroup_name()+"_야근식대.zip";
-        createZipFile(path,fileName);
-        fileDown(path,fileName,request,response,session);
+        fileUtils.createZipFile(path,fileName);
+        fileUtils.fileDown(path,fileName,request,response,session);
 
-        directoryDelete(path);
+        fileUtils.directoryDelete(path);
     }
 
     private String createExcel(OverTimeGroup group, HttpSession session) {
@@ -368,6 +350,7 @@ public class ExcelOverTime {
                 sheet1.addMergedRegion(new CellRangeAddress(aa, aa, 4, 5)); //startRow,endRow,startCol,endCol
                 aa++;
             }
+
             //--------------------------------------------------------------------------------------------------
             // 야근자 명단 세로 병합
             sheet1.addMergedRegion(new CellRangeAddress(8, 17, 1, 1)); //startRow,endRow,startCol,endCol
@@ -401,187 +384,5 @@ public class ExcelOverTime {
         return path;
     }
 
-    /**
-     * 디렉토리 및 파일을 압축한다.
-     *
-     * @param path     압축할 디렉토리 및 파일
-     * @param fileName 압축파일의 이름
-     */
-
-    private void createZipFile(String path, String fileName) {
-
-        File dir = new File(path);
-        String[] list = dir.list();
-        String _path;
-
-        if (!dir.canRead() || !dir.canWrite()) {
-            return;
-        }
-
-        int len = list.length;
-
-        if (path.charAt(path.length() - 1) != '/') {
-            _path = path + "/";
-        } else {
-            _path = path;
-        }
-
-        try {
-            ZipOutputStream zip_out = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(path + "/" + fileName), 2048));
-
-            for (int i = 0; i < len; i++) {
-                zip_folder("", new File(_path + list[i]), zip_out, path);
-            }
-
-            zip_out.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-
-
-        }
-    }
-
-    /**
-     * ZipOutputStream를 넘겨 받아서 하나의 압축파일로 만든다.
-     *
-     * @param parent 상위폴더명
-     * @param file   압축할 파일
-     * @param zout   압축전체스트림
-     * @throws IOException
-     */
-
-    private void zip_folder(String parent, File file, ZipOutputStream zout, String toPath) throws IOException {
-        byte[] data = new byte[2048];
-        int read;
-
-        if (file.isFile()) {
-            ZipEntry entry = new ZipEntry(parent + file.getName());
-            zout.putNextEntry(entry);
-            BufferedInputStream instream = new BufferedInputStream(new FileInputStream(file));
-
-            while ((read = instream.read(data, 0, 2048)) != -1)
-                zout.write(data, 0, read);
-
-            zout.flush();
-            zout.closeEntry();
-            instream.close();
-
-        } else if (file.isDirectory()) {
-            String parentString = file.getPath().replace(toPath, "");
-            parentString = parentString.substring(0, parentString.length() - file.getName().length());
-            ZipEntry entry = new ZipEntry(parentString + file.getName() + "/");
-            zout.putNextEntry(entry);
-
-            String[] list = file.list();
-            if (list != null) {
-                int len = list.length;
-                for (int i = 0; i < len; i++) {
-                    zip_folder(entry.getName(), new File(file.getPath() + "/" + list[i]), zout, toPath);
-                }
-            }
-        }
-    }
-
-    private void directoryDelete(String path) {
-        File folder = new File(path);
-        try {
-            while (folder.exists()) {
-                File[] folder_list = folder.listFiles(); //파일리스트 얻어오기
-
-                for (int j = 0; j < folder_list.length; j++) {
-                    folder_list[j].delete(); //파일 삭제
-                }
-                if (folder_list.length == 0 && folder.isDirectory()) {
-                    folder.delete(); //대상폴더 삭제
-                }
-            }
-        } catch (Exception e) {
-            e.getStackTrace();
-        }
-    }
-
-    private void fileDown(String fileUrl, String oriFileName, HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
-
-        request.setCharacterEncoding("UTF-8");
-        System.out.println("파일이름: " + oriFileName);
-
-        //파일 업로드된 경 로
-        try {
-
-            fileUrl = fileUrl + oriFileName;
-
-            System.out.println("fileUrl:" + fileUrl);
-
-            //실제 내보낼 파일명
-            InputStream in = null;
-            OutputStream os = null;
-            File file = null;
-            boolean skip = false;
-            String client = "";
-
-            //파일을 읽어 스트림에 담기
-            try {
-                file = new File(fileUrl);
-                in = new FileInputStream(file);
-            } catch (FileNotFoundException fe) {
-                skip = true;
-            }
-
-            client = request.getHeader("User-Agent");
-
-            //파일 다운로드 헤더 지정
-            response.reset();
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Description", "JSP Generated Data");
-
-            if (!skip) {
-                String[] invalidName = {"\\\\", "/", ":", "[*]", "[?]", "\"", "<", ">", "[|]", "&", " "}; // 윈도우 파일명으로 사용할수 없는 문자
-
-                for (int i = 0; i < invalidName.length; i++) {
-                    oriFileName = oriFileName.replaceAll(invalidName[i], "_");
-                }
-
-                System.out.println("변환된 파일이름: " + oriFileName);
-
-                // IE
-                if (client.indexOf("MSIE") != -1) {
-                    response.setHeader("Content-Disposition", "attachment; filename=\""
-                            + java.net.URLEncoder.encode(oriFileName, "UTF-8").replaceAll("\\+", "\\ ") + "\"");
-                    // IE 11 이상.
-                } else if (client.indexOf("Trident") != -1) {
-                    response.setHeader("Content-Disposition", "attachment; filename=\""
-                            + java.net.URLEncoder.encode(oriFileName, "UTF-8").replaceAll("\\+", "\\ ") + "\"");
-                } else {
-                    // 한글 파일명 처리
-                    response.setHeader("Content-Disposition",
-                            "attachment; filename=\"" + new String(oriFileName.getBytes("UTF-8"), "ISO8859_1") + "\"");
-                    response.setHeader("Content-Type", "application/octet-stream; charset=utf-8");
-                }
-                response.setHeader("Content-Length", "" + file.length());
-                os = response.getOutputStream();
-                byte b[] = new byte[(int) file.length()];
-                int leng = 0;
-                while ((leng = in.read(b)) > 0) {
-                    os.write(b, 0, leng);
-                }
-
-            } else {
-                response.setContentType("text/html;charset=UTF-8");
-
-                PrintWriter writer = response.getWriter();
-                writer.println("<script language='javascript'>alert('파일을 찾을 수 없습니다');history.back();</script>");
-
-            }
-            in.close();
-            os.close();
-        } catch (Exception e) {
-            System.out.println("ERROR : " + e.getMessage());
-        }
-
-    }
 
 }

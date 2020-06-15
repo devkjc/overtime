@@ -13,11 +13,11 @@ import java.util.ArrayList;
 public interface PeopleRepo extends JpaRepository<OverTimePeople, Long>, QuerydslPredicateExecutor<OverTimePeople> {
 
     @Query
-    public ArrayList<OverTimePeople> findByGroup(OverTimeGroup group);
+    ArrayList<OverTimePeople> findByGroup(OverTimeGroup group);
 
     @Query
     @Modifying
     @Transactional
-    public void deleteByGroupIsNull();
+    void deleteByGroupIsNull();
 
 }

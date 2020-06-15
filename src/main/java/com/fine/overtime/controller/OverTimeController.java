@@ -9,6 +9,7 @@ import com.fine.overtime.repo.ReceiptRepo;
 import com.fine.overtime.util.ExcelOverTime;
 import com.fine.overtime.util.ExcelRead;
 import com.fine.overtime.util.ExcelUploadUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,19 +29,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
+@RequiredArgsConstructor
 public class OverTimeController {
 
-    private ExcelOverTime overTime;
-    private GroupRepo repo;
-    private ReceiptRepo receiptRepo;
-    private PeopleRepo peopleRepo;
-
-    public OverTimeController(ExcelOverTime overTime, GroupRepo repo, ReceiptRepo receiptRepo, PeopleRepo peopleRepo) {
-        this.overTime = overTime;
-        this.repo = repo;
-        this.receiptRepo = receiptRepo;
-        this.peopleRepo = peopleRepo;
-    }
+    private final ExcelOverTime overTime;
+    private final GroupRepo repo;
+    private final ReceiptRepo receiptRepo;
+    private final PeopleRepo peopleRepo;
 
     @RequestMapping(value = "excelUploadAjax", method = RequestMethod.POST)
     public @ResponseBody List<OverTimeReceipt> excelUploadAjax(MultipartHttpServletRequest request, HttpSession httpSession, Model model) throws Exception {
@@ -50,6 +45,7 @@ public class OverTimeController {
 
         MultipartFile excelFile = request.getFile("excelFile");
         Long groupId = Long.valueOf(request.getParameter("groupId"));
+
         OverTimeGroup group = repo.findById(groupId).get();
 
         if (excelFile == null || excelFile.isEmpty()) {
@@ -100,8 +96,8 @@ public class OverTimeController {
     public void list(Model model) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "groupId");
-        List<OverTimeGroup> list = repo.findAll(sort);
-//        List<OverTimeGroup> list = repo.findAll();
+//        List<OverTimeGroup> list = repo.findAll(sort);
+        List<OverTimeGroup> list = repo.findAll();
 
         model.addAttribute("groupList", list);
     }
